@@ -1,0 +1,83 @@
+=== Comparison: MLQ vs RM vs EDF ===
+
+===================================================================
+Scenario 1 - high load (U = 0.95)
+===================================================================
+Task  C (burst)  T (period)  MLQ queue 
+---------------------------------------
+T1    2          5           1         
+T2    2          8           2         
+T3    3          10          3         
+
+CPU Utilization U = 0.950
+RM  bound n(2^(1/n)-1) = 0.780 -> NOT guaranteed (must simulate)
+EDF bound 1.000        -> schedulable
+
+--- MLQ timeline (0..40) ---
+      0         1         2         3         
+T1    ##...##...##...##...##...##...##...##...
+T2    ..##....##.......##.....#..#....##......
+T3    ....#..#.X..###.......##....#.....#..##.
+Missed deadlines: T3(deadline 10)
+
+--- RM timeline (0..40) ---
+      0         1         2         3         
+T1    ##...##...##...##...##...##...##...##...
+T2    ..##....##.......##.....#..#....##......
+T3    ....#..#.X..###.......##....#.....#..##.
+Missed deadlines: T3(deadline 10)
+
+--- EDF timeline (0..40) ---
+      0         1         2         3         
+T1    ##.....##.##....##..##...##...##.....##.
+T2    ..##.....#..#.....##.......##...##......
+T3    ....###......###......###.........###...
+Missed deadlines: none
+
+--- Summary: Scenario 1 - high load (U = 0.95) ---
+Algorithm  Jobs  Done  Missed  Miss %   Avg Resp  Switches  CPU %  
+-------------------------------------------------------------------
+MLQ        17    16    1       5.9      3.38      5         92.5   
+RM         17    16    1       5.9      3.38      5         92.5   
+EDF        17    17    0       0.0      3.88      1         95.0   
+
+===================================================================
+Scenario 2 - long system task in top MLQ queue
+===================================================================
+Task  C (burst)  T (period)  MLQ queue 
+---------------------------------------
+T1    1          4           2         
+T2    2          6           3         
+T3    4          12          1         
+
+CPU Utilization U = 0.917
+RM  bound n(2^(1/n)-1) = 0.780 -> NOT guaranteed (must simulate)
+EDF bound 1.000        -> schedulable
+
+--- MLQ timeline (0..12) ---
+      0         1 
+T1    ...X#...#...
+T2    .....X##....
+T3    ####........
+Missed deadlines: T1(deadline 4), T2(deadline 6)
+
+--- RM timeline (0..12) ---
+      0         1 
+T1    #...#...#...
+T2    .##...##....
+T3    ...#.#...##.
+Missed deadlines: none
+
+--- EDF timeline (0..12) ---
+      0         1 
+T1    #...#...#...
+T2    .##......##.
+T3    ...#.###....
+Missed deadlines: none
+
+--- Summary: Scenario 2 - long system task in top MLQ queue ---
+Algorithm  Jobs  Done  Missed  Miss %   Avg Resp  Switches  CPU %  
+-------------------------------------------------------------------
+MLQ        6     4     2       33.3     2.00      0         75.0   
+RM         6     6     0       0.0      3.17      2         91.7   
+EDF        6     6     0       0.0      3.17      1         91.7   
